@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gradient Border Form</title>
+    <style>
+        /* Basic styles */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #1d1d33; /* Dark background */
+        }
+
+        .form-container {
+            position: relative;
+            width: 360px;
+            padding: 20px;
+            color: white;
+           /* Ensures inner content stays inside border-radius */
+        }
+
+        /* Gradient border */
+        .form-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 20px;
+            background: linear-gradient(to bottom, #ffffff 0%, #4b4b4b 100%);
+            z-index: -1;
+            padding: 1px; /* Border thickness */
+            -webkit-mask: 
+                linear-gradient(#fff 0 0) content-box, 
+                linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor; 
+            mask-composite: exclude;
+        }
+
+        /* Typography */
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin: 0 0 20px 0;
+            color: #aaa;
+        }
+
+        /* Input fields */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-size: 14px;
+            display: block;
+            margin-bottom: 5px;
+            color: #bbb;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 14px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #7a7aff;
+        }
+
+        /* Button */
+        button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            background: #7a7aff;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: #5a5aff;
+        }
+
+        /* Additional text */
+        .additional-text {
+            text-align: center;
+            margin-top: 20px;
+            color: #bbb;
+        }
+
+        .additional-text a {
+            color: #7a7aff;
+            text-decoration: none;
+        }
+
+        .additional-text a:hover {
+            text-decoration: underline;
+        }
+
+        /* Toggle switch */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .toggle-container input {
+            margin-right: 10px;
+        }
+
+        .toggle-container label {
+            color: #bbb;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Hi, There</h1>
+        <p>Enter your email and password to sign in</p>
+        <form>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="Your email address" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Your password" required>
+            </div>
+            <div class="toggle-container">
+                <input type="checkbox" id="remember">
+                <label for="remember">Remember me</label>
+            </div>
+            <button type="submit">Sign In</button>
+            <div class="additional-text">
+                Don’t have an account? <a href="#">Sign up</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
