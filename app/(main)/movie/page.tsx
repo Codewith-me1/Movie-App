@@ -9,8 +9,13 @@ const SkeletonLoader = () => {
   );
 };
 
+interface Movie {
+  id: string;
+  title: string;
+  poster_path: string;
+}
 const Movie = () => {
-  const [movies, setMovies] = useState([]);
+  const [movies, setMovies] = useState<Movie[]>([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);

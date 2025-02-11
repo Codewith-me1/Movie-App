@@ -6,8 +6,19 @@ import { Info } from "lucide-react";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
+interface Movie {
+  id: number;
+  title: string;
+  name?: string;
+  poster_path: string;
+  release_date: string;
+  lan?: {
+    Genre?: string;
+  };
+}
+
 const Coming = () => {
-  const [movies, setMovies] = useState([]);
+  const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -95,7 +106,7 @@ const Coming = () => {
         {movies?.map((movie, key) => (
           <div className=" w-[100%]  xl:w-[40%] lg:w-[70%] rounded-lg flex lg:flex-row flex-col  bg-[#1c1e31] border-zinc-600">
             <div className="image_container w-[100%] lg:w-[35%] p-5">
-              {skeletonVisible && <SkeletonLoader class="w-full h-full" />}
+              {skeletonVisible && <SkeletonLoader className="w-full h-full" />}
               {!skeletonVisible && (
                 <img
                   draggable="false"
@@ -113,7 +124,7 @@ const Coming = () => {
               <p className="flex mt-10 text-zinc-400 ">
                 <span className="text-zinc-200">
                   {" "}
-                  Genres- &nbsp; {movie.lan.Genre}{" "}
+                  Genres- &nbsp; {movie.lan?.Genre}
                 </span>
               </p>
 

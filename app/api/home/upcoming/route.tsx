@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 
 const date = new Date();
-let day = date.getDate();
-let month = date.getMonth() + 1;
-let year = date.getFullYear();
+const day = date.getDate();
+const month = date.getMonth() + 1;
+const year = date.getFullYear();
 
 const currentDate = `${year}-${month}-${day}`;
 
-export async function GET(req) {
+export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const page = searchParams.get("page");
   try {

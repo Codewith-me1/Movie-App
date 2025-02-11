@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { addLikeData, removeLike, getUserLikes } from "@/app/firebase/database"; // Import your database functions
 
 interface Props {
-  likeId: number;
+  likeId: string;
   type: string;
 }
 
@@ -17,7 +17,7 @@ const Like = ({ likeId, type }: Props) => {
   const [isLiked, setIsLiked] = useState(false); // Tracks like state
   const [isLoading, setIsLoading] = useState(false); // Tracks API status
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [error, setError] = useState(""); // Tracks errors
+  const [error, setError] = useState<string | null>(null); // Tracks errors
 
   // Fetch user's like status
 
@@ -43,20 +43,18 @@ const Like = ({ likeId, type }: Props) => {
   };
 
   useEffect(() => {
-    if (!user) return;
-
     const fetchUserLikes = async () => {
       setIsLoading(true);
       setError(null);
 
       try {
         // Fetch the user's likes from the database
-        const userLikes = await getUserLikes(user.uid); // Expects `Liked: [{ ID, Type }]`
+        const userLikes = await getUserLikes(user?.uid); // Expects `Liked: [{ ID, Type }]`
 
         // Check if the current `likeId` and `type` exist in the `userLikes`
         const liked = userLikes.some(
           (item: { ID: number; Type: string }) =>
-            item.ID === likeId && item.Type === type
+            item.ID === parseInt(likeId) && item.Type === type
         );
 
         setIsLiked(liked); // Update the like state
@@ -82,11 +80,11 @@ const Like = ({ likeId, type }: Props) => {
     try {
       if (!isLiked) {
         // Add like if not liked
-        await addLikeData(user.uid, likeId, type);
+        await addLikeData(user?.uid, likeId, type);
         console.log("Like has been added");
       } else {
         // Remove like if already liked
-        await removeLike(user.uid, likeId, type);
+        await removeLike(likeId, type, user?.uid);
         console.log("Like has been removed");
       }
     } catch (err) {

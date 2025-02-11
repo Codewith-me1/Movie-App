@@ -1,13 +1,26 @@
 import { NextResponse } from "next/server";
 
 const date = new Date();
-let day = date.getDate();
-let month = date.getMonth() + 1;
-let year = date.getFullYear();
+const day = date.getDate();
+const month = date.getMonth() + 1;
+const year = date.getFullYear();
 
 const currentDate = `${year}-${month}-${day}`;
 
-export async function GET(req) {
+type Movie = {
+  id: number;
+  title: string;
+  overview: string;
+  release_date: string;
+  poster_path: string;
+  backdrop_path: string;
+  vote_average: number;
+  imdb_id?: string;
+  externalData?: any;
+  lan?: any;
+};
+
+export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const page = searchParams.get("page");
   try {
@@ -23,11 +36,11 @@ export async function GET(req) {
     );
     const data = await response.json();
 
-    const baseUrl = req.headers.get("host").startsWith("localhost")
+    const baseUrl = req.headers.get("host")?.startsWith("localhost")
       ? `http://${req.headers.get("host")}`
       : `https://${req.headers.get("host")}`;
     const detailedMoviesData = await Promise.all(
-      data.results.map(async (movie) => {
+      data.results.map(async (movie: Movie) => {
         try {
           const getId = await fetch(
             `https://api.themoviedb.org/3/movie/${movie.id}/external_ids?adult=true`,

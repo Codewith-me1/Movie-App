@@ -65,7 +65,7 @@ const Library = [
 ];
 
 interface Props {
-  loggedIn: Boolean;
+  loggedIn: boolean;
 }
 export default function SideNav({ loggedIn }: Props) {
   const groups = { Library };

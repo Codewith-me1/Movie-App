@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 const TMDB_AUTH_KEY = process.env.TMDB_AUTH_KEY;
 
-export async function GET(req) {
+export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const page = searchParams.get("page");
   try {
@@ -28,7 +28,7 @@ export async function GET(req) {
 
     // Return the processed data
     return NextResponse.json(data.results);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error in fetching OTT series:", error.message);
     return NextResponse.json(
       {

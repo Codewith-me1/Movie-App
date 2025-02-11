@@ -11,8 +11,16 @@ import "swiper/css/pagination";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import SkeletonLoader from "../others/skeletonLoader";
 
+interface UpcomingMovie {
+  id: string;
+  overview: string;
+  title: string;
+  backdrop_path: string;
+  poster_path: string;
+}
+
 const MovieScroll = () => {
-  const [upcoming, SetUpcoming] = useState([]);
+  const [upcoming, SetUpcoming] = useState<UpcomingMovie[]>([]);
   const [loading, setLoading] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 

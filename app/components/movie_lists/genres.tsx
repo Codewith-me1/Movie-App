@@ -7,11 +7,24 @@ import Link from "next/link";
 import { useCarousel } from "@/app/hooks/carousel";
 import SkeletonLoader from "../others/skeletonLoader";
 
+interface Genre {
+  id: number;
+  name: string;
+}
+
+interface Movie {
+  id: number;
+  title: string;
+  poster_path: string;
+}
+
+type MoviesByGenre = Record<number, Movie[]>;
+
 const Genres_List = () => {
-  const [genres, setGenres] = useState([]);
+  const [genres, setGenres] = useState<Genre[]>([]);
   const { carouselRef, scrollRight, scrollLeft } = useCarousel();
-  const [error, setError] = useState(null);
-  const [moviesByGenre, setMoviesByGenre] = useState({});
+  const [error, setError] = useState("");
+  const [moviesByGenre, setMoviesByGenre] = useState<MoviesByGenre>({});
   const [loading, setLoading] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [showLeftButton, setShowLeftButton] = useState(false);
@@ -31,7 +44,7 @@ const Genres_List = () => {
         const data = await response.json();
         setTimeout(handleLoading, 2000);
         setGenres(data.genres || []);
-      } catch (err) {
+      } catch (err: any) {
         console.log("Error fetching genres:", err.message);
         setError("Failed to load genres. Please try again later.");
       }
@@ -56,7 +69,7 @@ const Genres_List = () => {
           );
           const data = await response.json();
           return { genreId: genre.id, movies: data.results.slice(0, 4) };
-        } catch (err) {
+        } catch (err: any) {
           console.error(
             `Error fetching movies for genre ${genre.id}:`,
             err.message
@@ -66,10 +79,13 @@ const Genres_List = () => {
       });
 
       const results = await Promise.all(moviePromises);
-      const moviesMap = results.reduce((acc, { genreId, movies }) => {
-        acc[genreId] = movies;
-        return acc;
-      }, {});
+      const moviesMap: MoviesByGenre = results.reduce(
+        (acc, { genreId, movies }) => {
+          acc[genreId] = movies;
+          return acc;
+        },
+        {} as MoviesByGenre
+      );
       setMoviesByGenre(moviesMap);
     };
 

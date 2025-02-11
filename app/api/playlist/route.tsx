@@ -8,6 +8,11 @@ import { NextResponse } from "next/server";
 import Like from "@/app/components/features/Like";
 import Movie from "@/app/(main)/movie/page";
 
+type PlaylistItem = {
+  ID: string;
+  Type: "movie" | "show";
+};
+
 // export async function GET(req) {
 //   const authHeader = req.headers.get("Authorization");
 
@@ -84,7 +89,7 @@ import Movie from "@/app/(main)/movie/page";
 //   }
 // }
 
-export async function GET(req) {
+export async function GET(req: Request) {
   const authHeader = req.headers.get("Authorization");
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -107,7 +112,7 @@ export async function GET(req) {
       console.log("Admin claim set for user:", uid);
     }
 
-    const likedIds = await Likes(uid);
+    const likedIds: PlaylistItem[] = await Likes(uid); // Fetch watchlist items
 
     // Fetch movie/show details along with ID and Type
     const movieDetails = await Promise.all(

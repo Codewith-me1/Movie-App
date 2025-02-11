@@ -6,9 +6,16 @@ import { Card } from "@/components/ui/card";
 import { ArrowBigRight, ArrowBigLeft } from "lucide-react";
 import { useCarousel } from "@/app/hooks/carousel";
 
+interface Movie {
+  id: number;
+  title: string;
+  release_date: string;
+  poster_path: string;
+}
+
 export default function Testing() {
-  const [movies, setMovies] = useState([]);
-  const [error, setError] = useState(null);
+  const [movies, setMovies] = useState<Movie[]>([]);
+  const [error, setError] = useState("");
   const { carouselRef, scrollRight, scrollLeft } = useCarousel();
   const [isHovered, setIsHovered] = useState(false);
   const [showLeftButton, setShowLeftButton] = useState(false);
@@ -22,7 +29,7 @@ export default function Testing() {
         }
         const data = await response.json();
         setMovies(data.results || []);
-      } catch (err) {
+      } catch (err: any) {
         console.log("Error fetching movies:", err.message);
         setError("Failed to load movies. Please try again later.");
       }

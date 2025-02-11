@@ -8,7 +8,11 @@ import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { auth, signInWithPopup } from "../../firebase/config";
 import { useRouter } from "next/navigation";
 import Alert from "@/app/components/popup/alert";
-import { GithubAuthProvider, GoogleAuthProvider } from "firebase/auth";
+import {
+  AuthProvider,
+  GithubAuthProvider,
+  GoogleAuthProvider,
+} from "firebase/auth";
 import { setCookie } from "nookies";
 import { BiLockAlt, BiUser } from "react-icons/bi";
 import Image from "next/image";
@@ -21,10 +25,11 @@ export default function Login() {
   const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
 
-  const cleanErrorMessage = (message) =>
+  const cleanErrorMessage = (message: string) =>
     message.replace(/Firebase: Error|\(auth\/|\)/g, "").trim();
 
-  const handleLogin = async () => {
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
       const userCredential = await signInWithEmailAndPassword(email, password);
       if (userCredential) {
@@ -35,13 +40,12 @@ export default function Login() {
         });
         router.push("/");
       }
-    } catch (loginError) {
+    } catch (loginError: any) {
       setErrorMessage(cleanErrorMessage(loginError.message));
     }
   };
 
-  const handleProviderLogin = async (Provider) => {
-    const provider = new Provider();
+  const handleProviderLogin = async (provider: AuthProvider) => {
     try {
       const userCredentials = await signInWithPopup(auth, provider);
       if (userCredentials) {
@@ -52,7 +56,7 @@ export default function Login() {
         });
         router.push("/");
       }
-    } catch (error) {
+    } catch (error: any) {
       setErrorMessage(cleanErrorMessage(error.message));
     }
   };
@@ -98,7 +102,7 @@ export default function Login() {
           <Button
             variant="outline"
             className="w-full flex items-center justify-center glassyEffect"
-            onClick={() => handleProviderLogin(GoogleAuthProvider)}
+            onClick={() => handleProviderLogin(new GoogleAuthProvider())}
           >
             <Image
               src="/icons/google.svg"
@@ -113,7 +117,7 @@ export default function Login() {
           <Button
             variant="outline"
             className="w-full flex items-center justify-center glassyEffect"
-            onClick={() => handleProviderLogin(GithubAuthProvider)}
+            onClick={() => handleProviderLogin(new GithubAuthProvider())}
           >
             <Image
               src="/icons/github.svg"

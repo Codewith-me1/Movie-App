@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 
-export async function GET(request) {
+export async function GET(request: Request) {
   // Parse the query parameters from the URL
   const { searchParams } = new URL(request.url);
-  let page = searchParams.get("page"); // Get the 'page' parameter
+  const page = searchParams.get("page"); // Get the 'page' parameter
 
   // Validate the 'page' parameter
 

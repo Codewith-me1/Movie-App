@@ -10,9 +10,24 @@ import Like from "@/app/components/features/Like";
 import Watchlist from "@/app/components/features/Watchlist";
 import ShareComponent from "@/app/components/features/Share";
 
+interface Show {
+  id: string;
+  name: string;
+  poster_path: string;
+  rating: number;
+  genre_ids: number[];
+  lan: { Language: string };
+  seasons: number;
+}
+
+interface Genre {
+  id: number;
+  name: string;
+}
+
 const TvShow = () => {
-  const [shows, setShows] = useState([]);
-  const [genres, setGenres] = useState([]);
+  const [shows, setShows] = useState<Show[]>([]);
+  const [genres, setGenres] = useState<Genre[]>([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -86,11 +101,16 @@ const TvShow = () => {
   return (
     <div className="mt-20">
       <div className="card_container flex gap-10 lg:gap-20  flex-row flex-wrap justify-center px-10 w-full h-full">
-        {shows?.map((show) => (
-          <div className=" w-full md:w-[35rem] rounded-xl flex flex-col md:flex-row  bg-[#3e4050] ">
+        {shows?.map((show, key) => (
+          <div
+            key={key}
+            className=" w-full md:w-[35rem] rounded-xl flex flex-col md:flex-row  bg-[#3e4050] "
+          >
             <div className="side_container md:w-[30rem] rounded-lg flex flex-col md:flex-row bg-[#1c1e31]">
               <div className="image_container w-full md:w-[15rem] sm:w-1/2 p-4">
-                {skeletonVisible && <SkeletonLoader class="w-full h-full" />}
+                {skeletonVisible && (
+                  <SkeletonLoader className="w-full h-full" />
+                )}
 
                 {!skeletonVisible && (
                   <img

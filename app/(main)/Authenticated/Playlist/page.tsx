@@ -8,10 +8,20 @@ import React, { useEffect, useState } from "react";
 import Like from "@/app/components/features/Like";
 import Watchlist from "@/app/components/features/Watchlist";
 
+interface Movie {
+  details: {
+    id: string;
+    poster_path: string;
+  };
+  title: string;
+  Type: string;
+  ID: string;
+}
+
 const Page = () => {
   const { user } = useAuth();
   const auth = getAuth();
-  const [movieData, setMovieData] = useState([]);
+  const [movieData, setMovieData] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true); // Tracks loading state
 
   useEffect(() => {
@@ -54,7 +64,7 @@ const Page = () => {
         {!loading && movieData.length > 0
           ? movieData.map((movie) => (
               <div
-                key={movie.details.id}
+                key={movie.details?.id}
                 className="relative group  mb-10 cards"
               >
                 <Link href={`/movie/${movie.details.id}`} id="movie">
@@ -81,7 +91,7 @@ const Page = () => {
           Array(6) // Number of skeletons to display
             .fill(0)
             .map((_, index) => (
-              <SkeletonLoader class="w-full h-full" key={index} />
+              <SkeletonLoader className="w-full h-full" key={index} />
             ))}
       </div>
     </div>

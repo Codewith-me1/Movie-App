@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 
 const SkeletonLoader = () => {
   return (
@@ -9,14 +10,19 @@ const SkeletonLoader = () => {
   );
 };
 
-const Movie = ({ params }) => {
-  const [movies, setMovies] = useState([]);
+interface Movie {
+  id: string;
+  poster_path: string;
+  title: string;
+}
+const Movie = () => {
+  const [movies, setMovies] = useState<Movie[]>([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [skeletonVisible, setSkeletonVisible] = useState(false);
 
-  const id = params.id; // Dynamic id from props
+  const { id } = useParams(); // Dynamic id from props
 
   const handleImagesLoaded = () => {
     setSkeletonVisible(false); // Hide skeleton after images are loaded

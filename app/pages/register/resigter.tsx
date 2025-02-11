@@ -6,6 +6,7 @@ import { useState, useEffect, useRef, CSSProperties } from "react";
 import { useRouter } from "next/navigation";
 import { saveUserData } from "../../firebase/database";
 import { Button } from "@/components/ui/button";
+
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { Label } from "@/components/ui/label";
@@ -24,6 +25,7 @@ import { setCookie } from "nookies";
 import { GithubAuthProvider, GoogleAuthProvider } from "firebase/auth";
 import { BiHappyHeartEyes, BiLockAlt, BiUser } from "react-icons/bi";
 import { Eye, EyeClosed } from "lucide-react";
+import { AuthProvider } from "firebase/auth";
 
 const MultiStepSignup = () => {
   const [step, setStep] = useState(1);
@@ -41,7 +43,7 @@ const MultiStepSignup = () => {
   const boxRef = useRef(null);
   const [passwordError, setPasswordError] = useState("");
 
-  const validatePassword = (password) => {
+  const validatePassword = (password: string) => {
     const minLength = /.{8,}/;
     const uppercase = /[A-Z]/;
     const lowercase = /[a-z]/;
@@ -62,7 +64,7 @@ const MultiStepSignup = () => {
     return "";
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
 
@@ -72,7 +74,8 @@ const MultiStepSignup = () => {
     }
   };
 
-  const handleSignup = async () => {
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
       const userCredential = await createUserWithEmailAndPassword(
         formData.email,
@@ -81,19 +84,24 @@ const MultiStepSignup = () => {
       const registeredUser = userCredential?.user;
       const idToken = await registeredUser?.getIdToken();
 
-      setCookie(null, "auth-token", idToken, {
-        path: "/",
-        maxAge: 60 * 60 * 24,
-      });
+      if (idToken) {
+        setCookie(null, "auth-token", idToken, {
+          path: "/",
+          maxAge: 60 * 60 * 24,
+        });
 
-      router.push("/");
-    } catch (error) {
+        router.push("/");
+        console.log("Account Created");
+      } else {
+        throw new Error("Failed to retrieve ID token");
+      }
+    } catch (error: any) {
+      console.log(error);
       setErrorMessage(error.message);
     }
   };
 
-  const handleProviderLogin = async (Provider) => {
-    const provider = new Provider();
+  const handleProviderLogin = async (provider: AuthProvider) => {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
@@ -110,17 +118,19 @@ const MultiStepSignup = () => {
       await createUserInFirestore(user);
 
       router.push("/");
-    } catch (error) {
+    } catch (error: any) {
       setErrorMessage(error.message);
     }
   };
-
   useEffect(() => {
     if (user) {
-      saveUserData(user.user.uid, {
-        email: user.user.email,
-        createdAt: new Date(),
-      });
+      saveUserData(
+        {
+          email: user.user.email,
+          createdAt: new Date(),
+        },
+        user?.user.uid || "" // Provide a fallback
+      );
       router.push("/");
     }
   }, [user, router]);
@@ -173,11 +183,7 @@ const MultiStepSignup = () => {
         </div>
 
         <div className="mt-6">
-          <Button
-            onClick={handleSignup}
-            disabled={loading || passwordError}
-            className="w-full text-white text-lg"
-          >
+          <Button onClick={handleSignup} className="w-full text-white text-lg">
             {loading ? "Signing up..." : "Register"}
           </Button>
         </div>
@@ -185,7 +191,7 @@ const MultiStepSignup = () => {
           <Button
             variant="outline"
             className="w-full flex items-center justify-center glassyEffect"
-            onClick={() => handleProviderLogin(GoogleAuthProvider)}
+            onClick={() => handleProviderLogin(new GoogleAuthProvider())}
           >
             <Image
               src="/icons/google.svg"
@@ -200,7 +206,7 @@ const MultiStepSignup = () => {
           <Button
             variant="outline"
             className="w-full flex items-center justify-center glassyEffect"
-            onClick={() => handleProviderLogin(GithubAuthProvider)}
+            onClick={() => handleProviderLogin(new GithubAuthProvider())}
           >
             <Image
               src="/icons/github.svg"

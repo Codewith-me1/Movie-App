@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 
 const TMDB_API_KEY = process.env.TMDB_API_KEY; // Use an environment variable for security
 
-export async function GET(req) {
+export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const page = searchParams.get("page");
 

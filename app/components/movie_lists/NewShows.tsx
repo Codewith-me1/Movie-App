@@ -11,8 +11,19 @@ import {
   TimerResetIcon,
 } from "lucide-react";
 import Link from "next/link";
+
+interface Shows {
+  id: number;
+  backdrop_path: string;
+  poster_path: string;
+  release_date: string;
+  title: string;
+  total_epi: number;
+  seasons: number;
+}
+
 const NewReleases = () => {
-  const [newReleases, setNewReleases] = useState([]);
+  const [newReleases, setNewReleases] = useState<Shows[]>([]);
   const [error, setError] = useState(null);
   const [isHovered, setIsHovered] = useState(false);
   const [showLeftButton, setShowLeftButton] = useState(false);

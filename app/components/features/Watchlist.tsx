@@ -12,7 +12,7 @@ import {
 import { useRouter } from "next/navigation";
 
 interface Props {
-  watchListId: number;
+  watchListId: string;
   type: string;
 }
 
@@ -52,14 +52,16 @@ const Watchlist = ({ watchListId, type }: Props) => {
       setError("");
 
       try {
-        const watchlist = await getUserWatchlist(user.uid); // Fetch user's watchlist
+        if (user) {
+          const watchlist = await getUserWatchlist(user?.uid); // Fetch user's watchlist
 
-        const liked = watchlist.some(
-          (item: { ID: number; Type: string }) =>
-            item.ID === watchListId && item.Type === type
-        );
+          const liked = watchlist.some(
+            (item: { ID: number; Type: string }) =>
+              item.ID === parseInt(watchListId) && item.Type === type
+          );
 
-        setIsInWatchlist(liked);
+          setIsInWatchlist(liked);
+        }
       } catch (err) {
         console.error("Error fetching watchlist:", err);
         setError("Failed to fetch watchlist.");
@@ -82,11 +84,16 @@ const Watchlist = ({ watchListId, type }: Props) => {
     try {
       if (!isInWatchlist) {
         // Add to watchlist
-        await createWatchlist(user.uid, watchListId, type);
+        if (user) {
+          await createWatchlist(watchListId, type, user?.uid);
+        }
+
         console.log("Added to Watchlist");
       } else {
         // Remove from watchlist
-        await removeFromWatchlist(user.uid, watchListId, type);
+        if (user) {
+          await removeFromWatchlist(watchListId, type, user?.uid);
+        }
         console.log("Removed from Watchlist");
       }
     } catch (err) {

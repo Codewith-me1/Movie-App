@@ -1,6 +1,5 @@
 import React, { Suspense } from "react";
-import List from "./components/movie_lists/list";
-import Home from "./components/movie_lists/NewReleases";
+
 import Genres_List from "./components/movie_lists/genres";
 import NewReleases from "./components/movie_lists/NewShows";
 import Upcoming from "./components/movie_lists/upcoming";

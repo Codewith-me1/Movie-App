@@ -1,21 +1,38 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import { auth } from "@/app/firebase/config";
 
-const AuthContext = createContext({
+interface AuthUser {
+  uid: string;
+  email?: string;
+}
+
+interface AuthContextType {
+  user: AuthUser | null;
+  loading: boolean;
+}
+
+const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
+    const unsubscribe = onAuthStateChanged(auth, (currentUser: User | null) => {
+      if (currentUser) {
+        setUser({
+          uid: currentUser.uid,
+          email: currentUser.email || "",
+        });
+      } else {
+        setUser(null);
+      }
       setLoading(false);
     });
 
@@ -30,9 +47,5 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 }
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
+  return useContext(AuthContext);
 };

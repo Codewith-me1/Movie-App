@@ -4,15 +4,37 @@ import Like from "@/app/components/features/Like";
 import ShareComponent from "@/app/components/features/Share";
 import Watchlist from "@/app/components/features/Watchlist";
 import Provider from "@/app/components/provider/provider";
+import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
-interface Props {
-  params: string;
+interface ShowData {
+  id: string;
+  title: string;
+  backdrop_path?: string;
+  name: string;
+  poster_path?: string;
+  overview: string;
+  production_companies: { name?: string }[];
 }
 
-const Page = ({ params }: Props) => {
-  const id = params.id;
-  const [tv, settv] = useState(null);
+interface RatingData {
+  imdbRating?: string;
+  Ratings?: { Source: string; Value: string }[];
+  Genre?: string;
+  Language?: string;
+  Director?: string;
+  totalSeasons: string;
+  Writer?: string;
+}
+
+interface ShowResponse {
+  data: ShowData;
+  ratingData: RatingData;
+}
+
+const Page = () => {
+  const { id } = useParams();
+  const [tv, settv] = useState<ShowResponse | null>(null);
 
   const [streaming, updatedStreaming] = useState(null);
   const [error, setError] = useState(null);
@@ -27,7 +49,7 @@ const Page = ({ params }: Props) => {
         const data = await response.json();
         settv(data);
         console.log(data);
-      } catch (err) {
+      } catch (err: any) {
         setError(err.message);
       }
     };
@@ -81,7 +103,7 @@ const Page = ({ params }: Props) => {
               ? `https://image.tmdb.org/t/p/original/${tv.data.backdrop_path}`
               : `https://image.tmdb.org/t/p/original/${tv.data.poster_path}`
           }
-          alt={tv.name}
+          alt={tv.data.title}
           className="w-full h-full object-cover"
         />
         {/* Gradient Overlay */}

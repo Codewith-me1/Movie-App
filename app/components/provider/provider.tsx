@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 interface Props {
-  id: string;
+  id: string | string[] | undefined;
   type: string;
 }
 

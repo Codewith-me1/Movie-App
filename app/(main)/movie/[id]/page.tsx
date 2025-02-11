@@ -4,15 +4,35 @@ import Like from "@/app/components/features/Like";
 import ShareComponent from "@/app/components/features/Share";
 import Watchlist from "@/app/components/features/Watchlist";
 import Provider from "@/app/components/provider/provider";
+import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
-interface Props {
-  params: string;
+interface MovieData {
+  id: string;
+  title: string;
+  backdrop_path?: string;
+  poster_path?: string;
+  overview: string;
+  production_companies: { name?: string }[];
 }
 
-const Page = ({ params }: Props) => {
-  const id = params.id;
-  const [movie, setMovie] = useState(null);
+interface RatingData {
+  imdbRating?: string;
+  Ratings?: { Source: string; Value: string }[];
+  Genre?: string;
+  Language?: string;
+  Director?: string;
+  Writer?: string;
+}
+
+interface MovieResponse {
+  data: MovieData;
+  ratingData: RatingData;
+}
+
+const Page = () => {
+  const { id } = useParams();
+  const [movie, setMovie] = useState<MovieResponse | null>(null);
 
   const [streaming, updatedStreaming] = useState(null);
   const [error, setError] = useState(null);
@@ -27,7 +47,7 @@ const Page = ({ params }: Props) => {
         const data = await response.json();
         setMovie(data);
         console.log(data);
-      } catch (err) {
+      } catch (err: any) {
         setError(err.message);
       }
     };
@@ -63,7 +83,7 @@ const Page = ({ params }: Props) => {
               ? `https://image.tmdb.org/t/p/original/${movie.data.backdrop_path}`
               : `https://image.tmdb.org/t/p/original/${movie.data.poster_path}`
           }
-          alt={movie.title}
+          alt={movie.data.title}
           className="w-full h-full object-cover"
         />
         {/* Gradient Overlay */}

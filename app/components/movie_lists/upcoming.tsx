@@ -6,10 +6,18 @@ import React, { useEffect, useState } from "react";
 import SkeletonLoader from "../others/skeletonLoader";
 import Link from "next/link";
 
+interface Upcoming {
+  id: number;
+  backdrop_path: string;
+  poster_path: string;
+  release_date: string;
+  title: string;
+}
+
 const Upcoming = () => {
   const { carouselRef, scrollRight, scrollLeft } = useCarousel();
   const [error, SetError] = useState("");
-  const [movies, setMovie] = useState([]);
+  const [movies, setMovie] = useState<Upcoming[]>([]);
   const [loading, setLoading] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [showLeftButton, setShowLeftButton] = useState(false);
@@ -27,7 +35,7 @@ const Upcoming = () => {
 
         setTimeout(handleLoading, 1000);
         setMovie(data || []);
-      } catch (error) {
+      } catch (error: any) {
         console.log("There Has Been Some Error Please Try Again Later" + error);
         SetError(error);
       }
@@ -73,7 +81,7 @@ const Upcoming = () => {
                   key={movie.id}
                   className="comingSoonCard flex-shrink-0 w-[25rem] rounded-lg  shadow-lg group transform hover:scale-105 hover:shadow-2xl transition-transform duration-300 ease-in-out relative"
                 >
-                  {loading && <SkeletonLoader class="w-full h-full" />}
+                  {loading && <SkeletonLoader className="w-full h-full" />}
                   {!loading && (
                     <div className="relative ">
                       <img

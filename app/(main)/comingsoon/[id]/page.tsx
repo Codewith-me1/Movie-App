@@ -1,10 +1,10 @@
 "use client";
 
 import React from "react";
-import { useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
 
-const Page = ({ params }) => {
-  const id = params.id;
+const Page = () => {
+  const { id } = useParams();
   return <div>Page {id}</div>;
 };
 

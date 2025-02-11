@@ -1,12 +1,25 @@
-import { doc , getDoc, setDoc, updateDoc, arrayUnion, arrayRemove, deleteField } from "firebase/firestore";
+import { doc , getDoc, setDoc, updateDoc, arrayUnion, arrayRemove, deleteField, Timestamp } from "firebase/firestore";
 
 import { db } from './config'
+import { User } from "firebase/auth";
+
+
+
+interface UserData {
+  
+  email:string|null;
+  createdAt:Date | null;
+
+}
 
 
 
 
+export const saveUserData  = async(userData:UserData,userId?:string)=>{
 
-export const saveUserData  = async(userId,userData)=>{
+  if (!userId) {
+    throw new Error("Invalid user ID");
+  }
 
     try{ 
         await setDoc(doc(db, "users", userId), userData);
@@ -20,8 +33,13 @@ export const saveUserData  = async(userId,userData)=>{
 
 
 
-export const addLikeData = async (userId, likedId,type) => {
+export const addLikeData = async (userId?:string, likedId?:string,type?:string) => {
+  
   try {
+    if (!userId) {
+      throw new Error("Invalid user ID");
+    }
+  
     // Reference the specific user's document
     const userDocRef = doc(db, "users", userId);
 
@@ -31,7 +49,7 @@ export const addLikeData = async (userId, likedId,type) => {
     });
 
     console.log(`Successfully added ${likedId} to the Liked array`);
-  } catch (error) {
+  } catch (error:any) {
     if (error.code === "not-found") {
       console.error("Document does not exist.");
     } else {
@@ -42,8 +60,12 @@ export const addLikeData = async (userId, likedId,type) => {
 
 
 
-export const addGenreData = async (userId, genreDataArray) => {
+export const addGenreData = async (userId?:string, genreDataArray:[]=[]) => {
     try {
+      if (!userId) {
+        throw new Error("Invalid user ID");
+      }
+    
       // Use a batch update to add each genre individually to ensure no duplicates
       const userDocRef = doc(db, 'users', userId);
       await updateDoc(userDocRef, {
@@ -56,37 +78,51 @@ export const addGenreData = async (userId, genreDataArray) => {
   };
 
 
+  interface Like{
+    ID:string;
+    Type:string;
+  }
 
 
   
-export const removeLike = async (userId, likeId, type) => {
-  try {
-    const userRef = doc(db, "users", userId);
-    const userSnap = await getDoc(userRef);
-
-    if (userSnap.exists()) {
-      const userData = userSnap.data();
-      const updatedLikes = userData.Liked
-        ? userData.Liked.filter(like => like.ID !== likeId || like.Type !== type)
-        : [];
-
-      await updateDoc(userRef, {
-        Liked: updatedLikes
-      });
-
-      console.log(`Like with ID ${likeId} has been removed for user ${userId}`);
-    } else {
-      console.log("User not found");
+  export const removeLike = async (  likeId: string,  type: string,userId?: string) => {
+    try {
+      if (!userId) {
+        throw new Error("Invalid user ID");
+      }
+  
+      const userRef = doc(db, "users", userId);
+      const userSnap = await getDoc(userRef);
+  
+      if (userSnap.exists()) {
+        const userData = userSnap.data();
+        const likedArray: Like[] = userData.Liked || []; // Explicitly typing as `Like[]`
+  
+        const updatedLikes = likedArray.filter((like) => like.ID !== likeId || like.Type !== type);
+  
+        await updateDoc(userRef, {
+          Liked: updatedLikes,
+        });
+  
+        console.log(`Like with ID ${likeId} has been removed for user ${userId}`);
+      } else {
+        console.log("User not found");
+      }
+    } catch (error) {
+      console.error("Error removing like:", error);
+      throw new Error("Failed to remove like. Please try again.");
     }
-  } catch (error) {
-    console.error("Error removing like:", error);
-    throw new Error("Failed to remove like. Please try again.");
-  }
-};
+  };
+  
 
 
 
-  export const getUserLikes = async (uid) => {
+  export const getUserLikes = async (uid?:string) => {
+
+    if (!uid) {
+      throw new Error("Invalid user ID");
+    }
+  
 
     const docRef = doc(db, "users", uid);
     const docSnap = await getDoc(docRef);
@@ -99,7 +135,7 @@ export const removeLike = async (userId, likeId, type) => {
 
 
 
-  export const createUserInFirestore = async (user) => {
+  export const createUserInFirestore = async (user:User) => {
     try {
       const userRef = doc(db, "users", user.uid);
       await setDoc(userRef, {
@@ -118,46 +154,59 @@ export const removeLike = async (userId, likeId, type) => {
 
 
 
-  export const createWatchlist = async (userId, watchId,type) => {
+  export const createWatchlist = async (watchId: string, type: string, userId?: string) => {
     try {
-      // Reference the specific user's document
-      const userDocRef = doc(db, "users", userId);
-  
-      // Update the 'Liked' field in the user's document
-      await updateDoc(userDocRef, {
-        Watchlist: arrayUnion({ID:watchId,Type:type}), // Add the likedId to the "Liked" array field
-      });
-  
-      console.log(`Successfully added ${watchId} to the Watchlist `);
-    } catch (error) {
-      if (error.code === "not-found") {
-        console.error("Document does not exist.");
-      } else {
-        console.error("Error updating document: ", error.message);
-      }
+        if (!userId) {
+            throw new Error("Invalid user ID");
+        }
+
+        // Reference the specific user's document
+        const userDocRef = doc(db, "users", userId);
+
+        // Update the 'Watchlist' field in the user's document
+        await updateDoc(userDocRef, {
+            Watchlist: arrayUnion({ ID: watchId, Type: type }),
+        });
+
+        console.log(`Successfully added ${watchId} to the Watchlist`);
+    } catch (error: any) {
+        if (error.code === "not-found") {
+            console.error("Document does not exist.");
+        } else {
+            console.error("Error updating document: ", error.message);
+        }
     }
-  };
-  
-  
-
+};
 
   
 
 
+  
 
-  export const removeFromWatchlist = async (userId, watchlistId, type) => {
+  interface WatchlistItem{
+    ID:string;
+    Type:string;
+  }
+
+  export const removeFromWatchlist = async ( watchlistId: string, type: string, userId?: string) => {
     try {
+      if (!userId) {
+        throw new Error("Invalid user ID");
+      }
+  
       const userRef = doc(db, "users", userId);
       const userSnap = await getDoc(userRef);
   
       if (userSnap.exists()) {
         const userData = userSnap.data();
-        const updatedWatchlist = userData.Watchlist
-          ? userData.Watchlist.filter(item => item.ID !== watchlistId || item.Type !== type)
-          : [];
+        const watchlist: WatchlistItem[] = userData.Watchlist || []; // Ensure it's an array
+  
+        const updatedWatchlist = watchlist.filter(
+          (item) => item.ID !== watchlistId || item.Type !== type
+        );
   
         await updateDoc(userRef, {
-          Watchlist: updatedWatchlist
+          Watchlist: updatedWatchlist,
         });
   
         console.log(`Item with ID ${watchlistId} has been removed from Watchlist for user ${userId}`);
@@ -169,9 +218,15 @@ export const removeLike = async (userId, likeId, type) => {
       throw new Error("Failed to remove item from Watchlist. Please try again.");
     }
   };
+  
 
   
-export const getUserWatchlist = async (userId) => {
+export const getUserWatchlist = async (userId?:string) => {
+  if (!userId) {
+    throw new Error("Invalid user ID");
+  }
+
+
   const docRef = doc(db, "users", userId);
   const docSnap = await getDoc(docRef);
 

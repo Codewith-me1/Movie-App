@@ -19,7 +19,7 @@ export const adminAuth = admin.auth();
 export const adminDb = admin.firestore();
 // Optional: Export the entire admin instance if needed
 
-export const setAdminClaim = async (uid) => {
+export const setAdminClaim = async (uid:string) => {
   try {
     await admin.auth().setCustomUserClaims(uid, { admin: true });
     console.log(`Admin claim added to user ${uid}`);
