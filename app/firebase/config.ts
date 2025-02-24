@@ -4,6 +4,7 @@ import { getAuth, GoogleAuthProvider,signInWithPopup } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 
+
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_AUTH_DOMAIN,
@@ -21,6 +22,7 @@ const app = !getApps().length ? initializeApp(firebaseConfig):getApp();
 const provider = new GoogleAuthProvider
 const auth = getAuth(app)
 const db = getFirestore(app)
+
 
 
 export {app,provider,signInWithPopup,auth,db}
