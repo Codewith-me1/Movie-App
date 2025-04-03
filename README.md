@@ -1,10 +1,7 @@
-Here’s a **README.md** for your **Movie App** project, along with some **better name suggestions** at the end.  
+
 
 ---
 
-### **README.md for Movie App**  
-
-```markdown
 # 🎬 MovieHub - Your Ultimate Movie Companion  
 
 MovieHub is a modern web application that allows users to discover, search, and explore movies with detailed information, trailers, and ratings.  
